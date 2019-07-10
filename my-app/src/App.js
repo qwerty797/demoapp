@@ -1,24 +1,17 @@
 // /client/App.js
 import React, {Component} from 'react';
-import {NameForm} from './addPersonFormComponent';
-import {retrieveAllPeopleFromDB, deletePersonFromDB} from './databaseService';
+import {NameForm} from './NameForm';
+import {retrieveAllPeopleFromDB, deletePersonFromDB, updatePersonDB} from './databaseService';
 
 
 class App extends Component {
     // initialize our state
     state = {
         data: [],
-        id: 0,
-        message: null,
         refresh: false,
-        idToDelete: null,
-        idToUpdate: null,
-        objectToUpdate: null,
     };
 
-    // when component mounts, first thing it does is fetch all existing data in our db
-    // then we incorporate a polling logic so that we can easily see if our db has
-    // changed and implement those changes into our UI
+    //on start up fetch all existing data in our db
     componentDidMount() {
         this.getDataFromDb();
         console.log("data state", this.state.data);
@@ -36,14 +29,16 @@ class App extends Component {
         }
     }
 
-    // get method that uses our backend api to
-    // fetch data from our data base
+    // get method that uses our service layer to contact our backend api to
+    // fetch data from our database and set it on state
     getDataFromDb = () => {
         retrieveAllPeopleFromDB().then((res) => {
             this.setState({data:res })
         });
     };
 
+    // delete method that uses our service layor to contact the backend api to
+    // delete data from our database
     deleteFromDB = (data) => {
         deletePersonFromDB(data).then(()=> {
             console.log("in promiose");
@@ -51,8 +46,19 @@ class App extends Component {
         })
     };
 
-    updateView(){}
+    //sets the status of the checkbox and then use service layer
+    //to update checkbox in background
+    handleInputChange = (data) => {
 
+        if(data.isChecked){
+            data.isChecked =false;
+        }else{
+            data.isChecked =true;
+        }
+
+        updatePersonDB(data)
+
+    };
 
 
     render() {
@@ -61,17 +67,22 @@ class App extends Component {
         return (
             <div>
                 <ul>
-                    {console.log("jamie"+JSON.stringify(data))}
+                    {console.log("display data"+JSON.stringify(data))}
                     {data == undefined || data.length <= 0
                         ? 'NO DB ENTRIES YET'
                         : data.map((data) => (
                             <li style={{padding: '10px'}} key={count++}>
-                                <span style={{color: 'gray'}}> name: </span> {data.name} <br/>
-                                <span style={{color: 'gray'}}> age:</span> {data.age} <br/>
-                                <span style={{color: 'gray'}}> balance:</span> {data.balance} <br/>
-                                <span style={{color: 'gray'}}> email:</span> {data.email} <br/>
-                                <span style={{color: 'gray'}}> address:</span> {data.address} <br/>
-
+                                <span style={{color: 'blue'}}> name: </span> {data.name} <br/>
+                                <span style={{color: 'blue'}}> age:</span> {data.age} <br/>
+                                <span style={{color: 'blue'}}> balance:</span> {data.balance} <br/>
+                                <span style={{color: 'blue'}}> email:</span> {data.email} <br/>
+                                <span style={{color: 'blue'}}> address:</span> {data.address}
+                                    <input
+                                        type="checkbox"
+                                        defaultChecked={data.isChecked}
+                                        onChange={()=>this.handleInputChange(data)}
+                                    />
+                                    <br/>
                                 <button onClick={() => this.deleteFromDB(data)}>
                                     DELETE
                                 </button>
@@ -81,36 +92,6 @@ class App extends Component {
                 <br/>
                 <div>
                     < NameForm getDataFromDb={this.getDataFromDb}/>
-                </div>
-                <div style={{padding: '10px'}}>
-                    <input
-                        type="text"
-                        style={{width: '200px'}}
-                        onChange={(e) => this.setState({idToDelete: e.target.value})}
-                        placeholder="put id of item to delete here"
-                    />
-
-                </div>
-                <div style={{padding: '10px'}}>
-                    <input
-                        type="text"
-                        style={{width: '200px'}}
-                        onChange={(e) => this.setState({idToUpdate: e.target.value})}
-                        placeholder="id of item to update here"
-                    />
-                    <input
-                        type="text"
-                        style={{width: '200px'}}
-                        onChange={(e) => this.setState({updateToApply: e.target.value})}
-                        placeholder="put new value of the item here"
-                    />
-                    <button
-                        onClick={() =>
-                            this.updateDB(this.state.idToUpdate, this.state.updateToApply)
-                        }
-                    >
-                        UPDATE
-                    </button>
                 </div>
             </div>
         );

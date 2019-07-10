@@ -2,30 +2,31 @@ import React, { Component } from 'react';
 import {Person} from './Person';
 import {addPersonToDB} from './databaseService';
 
-
+//NameForm has its own data and behaviour so better to seperate it into
+//it's own class and encapsulate the data.
 export class NameForm extends Component {
     constructor(props) {
         super(props);
-        this.state = {value: '', age:0};
-
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    //this is made generic so that every input can be handled here
+    //rather than have a method for every input change
     handleInputChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         });
     };
 
+    //calls service to add someone to the DB
     handleSubmit = (e) => {
-        console.log("handle sub");
         e.preventDefault();
-        addPersonToDB(new Person(this.state.name, this.state.age)).then(()=>{
+        addPersonToDB(new Person(this.state.name, this.state.age, this.state.balance,this.state.email, this.state.address)).then(()=>{
 
+            //child passes info up to parent so state can be changed
             this.props.getDataFromDb();
         });
-
     };
 
     render() {
@@ -57,4 +58,3 @@ export class NameForm extends Component {
     }
 }
 
-// {/*<form onSubmit={this.handleSubmit} action="/api/login">*/}

@@ -24,8 +24,8 @@ var url ='mongodb://127.0.0.1:27017';
 mongoClient.connect(url, (err,client)=>{
 
   if(err){
-    console.log("db connection error")
-    console.log(err)
+    console.log("db connection error");
+    console.log(err);
     return
   }
   console.log('connected to DB');
@@ -48,19 +48,7 @@ router.post('/postData', (req, res) => {
 
 
 });
-// this is our MongoDB database
-// const dbRoute =
-//   'mongodb://<your-db-username-here>:<your-db-password-here>@ds249583.mlab.com:49583/fullstack_app';
 
-// connects our back end code with the database
-// mongoose.connect(dbRoute, { useNewUrlParser: true });
-
-// let db = mongoose.connection;
-
-// db.once('open', () => console.log('connected to the database'));
-
-// checks if connection with the database is successful
-// db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // (optional) only made for logging and
 // bodyParser, parses the request body to be a readable json format
@@ -74,24 +62,26 @@ router.get('/getData', (req, res) => {
   var a = collection.find().toArray(function(err, docs) {
         return res.json(docs);
       });
-
-
-
-  // .then(err, data){
-  //   if (err) return res.json({ success: false, error: err });
-  //   return res.json({ success: true, data: data });
-  // });
-  console.log('inside getData backend', a);
 });
 
 // this is our update method
 // this method overwrites existing data in our database
 router.post('/updateData', (req, res) => {
-  const { id, update } = req.body;
-  Data.findByIdAndUpdate(id, update, (err) => {
-    if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true });
+  // const { id, update } = req.body;
+  //   // Data.findByIdAndUpdate(id, update, (err) => {
+  //   //   if (err) return res.json({ success: false, error: err });
+  //   //   return res.json({ success: true });
+  //   // });
+  var id = req.body._id;
+  console.log("id "+ id);
+  // console.log('delete backend api '+);
+  var _id=  mongoose.Types.ObjectId(id);
+
+  collection.updateOne({ "_id" : _id },  {$set:{isChecked: req.body.isChecked}}, function(err, res) {
+    if (err) throw err;
+    console.log("1 document updated");
   });
+  return res.json({ success: true });
 });
 
 // this is our delete method

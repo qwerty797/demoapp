@@ -5,6 +5,7 @@ export class Person {
         this.balance = balance;
         this.email = email;
         this.address = address;
+        this.isChecked =false;
     }
 }
 
