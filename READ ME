@@ -15,7 +15,7 @@ npm install
 cd demo-backend
 npm install
 
-cd full-stack-app
+cd demoapp
 // this has a package.json at the top layer that will fire up the front and back end via an npm command
 
 npm start 
